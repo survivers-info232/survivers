@@ -61,7 +61,7 @@ def read_as_df(basename, type="train"):
     print('Number of examples = %d' % patnum)
     print('Number of features = %d' % featnum)
 
-    XY=X
+    XY = X
     Y = pd.read_csv(basename + '_' + type + '.solution', sep=' ', names = np.ravel(label_name))
 
     # Y=[]
@@ -90,6 +90,7 @@ def read_as_df(basename, type="train"):
     print(Y.shape)
 
     return pd.concat([X, Y], axis=1)
+
 
 # ================ Small auxiliary functions =================
 

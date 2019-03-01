@@ -14,6 +14,10 @@ from sklearn.preprocessing import StandardScaler
 import pickle 
 
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors.nearest_centroid import NearestCentroid
+from sklearn.ensemble import RandomForestClassifier
 
 class model(BaseEstimator):
     def __init__(self):
@@ -26,7 +30,19 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
         # Baseline decision tree :
-        self.baseline_clf = DecisionTreeRegressor(max_depth=1)
+        #self.baseline_clf = DecisionTreeRegressor(max_depth=1)
+        
+        #Naivebayes :
+        #self.baseline_clf = GaussianNB()
+        
+        #linaire regression :
+        self.baseline_clf = LinearRegression()
+        
+        #random forest :
+        #self.baseline_clf = RandomForestClassifier()
+        
+        #nearest neighbors :
+        #self.baseline_clf = NearestCentroid()
 
     def fit(self, X, y):
         '''
