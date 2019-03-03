@@ -30,13 +30,13 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
         # Baseline decision tree :
-        #self.baseline_clf = DecisionTreeRegressor(max_depth=1)
+        self.baseline_clf = DecisionTreeRegressor(max_depth=4)
         
         #Naivebayes :
         #self.baseline_clf = GaussianNB()
         
         #linaire regression :
-        self.baseline_clf = LinearRegression()
+        #self.baseline_clf = LinearRegression()
         
         #random forest :
         #self.baseline_clf = RandomForestClassifier()
@@ -111,3 +111,4 @@ class model(BaseEstimator):
                 self = pickle.load(f)
             print("Model reloaded from: " + modelfile)
         return self
+
