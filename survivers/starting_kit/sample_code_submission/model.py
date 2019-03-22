@@ -18,6 +18,9 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LinearRegression
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import VotingClassifier
+from sklearn.pipeline import Pipeline
 
 class model(BaseEstimator):
     def __init__(self):
@@ -30,7 +33,7 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
         # Baseline decision tree :
-        self.baseline_clf = DecisionTreeRegressor(max_depth=4)
+        #self.baseline_clf = DecisionTreeRegressor(max_depth=4)
         
         #Naivebayes :
         #self.baseline_clf = GaussianNB()
@@ -43,6 +46,15 @@ class model(BaseEstimator):
         
         #nearest neighbors :
         #self.baseline_clf = NearestCentroid()
+
+
+        self.baseline_clf = VotingClassifier(estimators=[
+                    ('DecisionTreeRegressor4', DecisionTreeRegressor(max_depth=4)),
+                    ('LinearRegression'      , LinearRegression()),
+                    ('RandomForestClassifier', RandomForestClassifier()),
+                    ('NearestCentroid'       , NearestCentroid()),
+                    ('GaussianNB', GaussianNB())],
+                                      voting='soft')
 
     def fit(self, X, y):
         '''
