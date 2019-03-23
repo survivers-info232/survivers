@@ -19,10 +19,10 @@ from sklearn.linear_model import LinearRegression               # que l'on a utl
 from sklearn.neighbors.nearest_centroid import NearestCentroid  #
 from sklearn.ensemble import RandomForestClassifier             # 
 
-from sklearn.ensemble import BaggingRegressor
-from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import BaggingRegressor                   #
+from sklearn.ensemble import BaggingClassifier                  #
 from sklearn.ensemble import VotingClassifier                   # Pour faire voter les regressions
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline                           #
 
 class model(BaseEstimator):
     def __init__(self):
@@ -49,7 +49,7 @@ class model(BaseEstimator):
         #nearest neighbors : score 0.2249313468
         #self.baseline_clf = NearestCentroid()
         
-        #self.baseline_clf = BaggingRegressor(base_estimator=[
+        #self.baseline_clf = BaggingRegressor(base_estimator=[ 
          #   ('DecisionTreeRegressor4', DecisionTreeRegressor(max_depth=4)),
           #          ('LinearRegression'      , LinearRegression()),
            #         ('RandomForestClassifier', RandomForestClassifier()),
@@ -100,7 +100,7 @@ class model(BaseEstimator):
         self.baseline_clf.fit(X, y, what)
         self.is_trained=True
         
-    def processor(self,X,Y, what=0):                            # le Préprocessing (séparation des données censurées et non censurées) 
+    def processor(self,X,Y, what=0):                   # le Préprocessing (séparation des données censurées et non censurées) 
          ### NEW CONTRIBUTION OF THE GROUP  ###
         '''This function should preprocess the data
         Args :
@@ -108,18 +108,18 @@ class model(BaseEstimator):
             Y : Training label matrix
             what : if 0 return uncensored data, if 1 return censored data
         '''
-        if (what==0) :
+        if (what==0) :                                          # Les données non censuré
             X_uncensored = X[np.where(X[:,X.shape[1]-1]==1)]
             if Y.shape[0]==0 :
-                return (X_uncensored,Y)                         # Les données non censuré
+                return (X_uncensored,Y)                         
             else :
                 Y_uncensored = Y[np.where(X[:,X.shape[1]-1]==1)]
                 return (X_uncensored, Y_uncensored)
             
-        if (what==1) :
+        if (what==1) :                                          # Les données censuré
             X_censored = X[np.where(X[:,X.shape[1]-1]==0)]
             if Y.shape[0]==0 :
-                return (X_censored,Y)                           # Les données censuré
+                return (X_censored,Y)                           
             else :
                 Y_censored = Y[np.where(X[:,X.shape[1]-1]==0)]
                 return (X_censored,Y_censored)
