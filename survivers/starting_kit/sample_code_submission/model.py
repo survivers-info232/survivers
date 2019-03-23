@@ -1,6 +1,6 @@
 '''
 Sample predictive model.
-You must supply at least 4 methods:
+You must supply at least 4 methods: 
 - fit: trains the model.
 - predict: uses the model to perform predictions.
 - save: saves the model.
