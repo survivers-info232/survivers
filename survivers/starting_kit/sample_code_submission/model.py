@@ -13,15 +13,15 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import pickle 
 
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LinearRegression
-from sklearn.neighbors.nearest_centroid import NearestCentroid
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeRegressor                  #
+from sklearn.naive_bayes import GaussianNB                      # Les différentes regression
+from sklearn.linear_model import LinearRegression               # que l'on a utlisé
+from sklearn.neighbors.nearest_centroid import NearestCentroid  #
+from sklearn.ensemble import RandomForestClassifier             # 
 
 from sklearn.ensemble import BaggingRegressor
 from sklearn.ensemble import BaggingClassifier
-from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import VotingClassifier                   # Pour faire voter les regressions
 from sklearn.pipeline import Pipeline
 
 class model(BaseEstimator):
@@ -34,19 +34,19 @@ class model(BaseEstimator):
         self.num_feat=1
         self.num_labels=1
         self.is_trained=False
-        # Baseline decision tree :
-        self.baseline_clf = DecisionTreeRegressor(max_depth=4)
+        # Baseline decision tree : score 0.736285037
+        self.baseline_clf = DecisionTreeRegressor(max_depth=4)    # la meilleure regression parmis celle testées
         
-        #Naivebayes :
+        #Naivebayes : score 0.2084484036
         #self.baseline_clf = GaussianNB()
         
-        #linaire regression :
+        #linaire regression :  score 0.683989487
         #self.baseline_clf = LinearRegression()
         
-        #random forest :
+        #random forest : score 0.4795732662
         #self.baseline_clf = RandomForestClassifier()
         
-        #nearest neighbors :
+        #nearest neighbors : score 0.2249313468
         #self.baseline_clf = NearestCentroid()
         
         #self.baseline_clf = BaggingRegressor(base_estimator=[
@@ -100,7 +100,7 @@ class model(BaseEstimator):
         self.baseline_clf.fit(X, y, what)
         self.is_trained=True
         
-    def processor(self,X,Y, what=0):
+    def processor(self,X,Y, what=0):                            # le Préprocessing (séparation des données censurées et non censurées) 
          ### NEW CONTRIBUTION OF THE GROUP  ###
         '''This function should preprocess the data
         Args :
@@ -111,7 +111,7 @@ class model(BaseEstimator):
         if (what==0) :
             X_uncensored = X[np.where(X[:,X.shape[1]-1]==1)]
             if Y.shape[0]==0 :
-                return (X_uncensored,Y)
+                return (X_uncensored,Y)                         # Les données non censuré
             else :
                 Y_uncensored = Y[np.where(X[:,X.shape[1]-1]==1)]
                 return (X_uncensored, Y_uncensored)
@@ -119,7 +119,7 @@ class model(BaseEstimator):
         if (what==1) :
             X_censored = X[np.where(X[:,X.shape[1]-1]==0)]
             if Y.shape[0]==0 :
-                return (X_censored,Y)
+                return (X_censored,Y)                           # Les données censuré
             else :
                 Y_censored = Y[np.where(X[:,X.shape[1]-1]==0)]
                 return (X_censored,Y_censored)
