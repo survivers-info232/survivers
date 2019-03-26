@@ -18,6 +18,7 @@ from sklearn.naive_bayes import GaussianNB                      # Les différent
 from sklearn.linear_model import LinearRegression               # que l'on a utlisé
 from sklearn.neighbors.nearest_centroid import NearestCentroid  #
 from sklearn.ensemble import RandomForestClassifier             # 
+from sklearn.ensemble import GradientBoostingRegressor          #
 
 from sklearn.ensemble import BaggingRegressor                   #
 from sklearn.ensemble import BaggingClassifier                  #
@@ -35,7 +36,10 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
         # Baseline decision tree : score 0.736285037
-        self.baseline_clf = DecisionTreeRegressor(max_depth=4)    # la meilleure regression parmis celle testées
+        self.baseline_clf = DecisionTreeRegressor(max_depth=4)    
+        
+        # GradientBoostingRegressor : score 0.7800
+        self.baseline_clf = GradientBoostingRegressor()   # la meilleure regression parmis celle testées
         
         #Naivebayes : score 0.2084484036
         #self.baseline_clf = GaussianNB()
@@ -101,7 +105,7 @@ class model(BaseEstimator):
         self.is_trained=True
         
     def processor(self,X,Y, what=0):                   # le Préprocessing (séparation des données censurées et non censurées) 
-         ### NEW CONTRIBUTION OF THE GROUP  ###
+         ### NEW CONTRIBUTION OF THE GROUP  ###        # les tests sont sur le jupyter notebook
         '''This function should preprocess the data
         Args :
             X : training data matrix
