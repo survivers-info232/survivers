@@ -36,7 +36,7 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
         # Baseline decision tree : score 0.736285037
-        self.baseline_clf = DecisionTreeRegressor(max_depth=4)    
+        #self.baseline_clf = DecisionTreeRegressor(max_depth=4)    
         
         # GradientBoostingRegressor : score 0.7800
         self.baseline_clf = GradientBoostingRegressor()   # la meilleure regression parmis celle testées
