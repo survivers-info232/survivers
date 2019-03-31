@@ -25,6 +25,21 @@ from sklearn.ensemble import BaggingClassifier      # Pour faire voter
 from sklearn.ensemble import VotingClassifier       # les regressions
 from sklearn.pipeline import Pipeline               #
 
+from sklearn.decomposition import PCA
+    ############ nouvelle idée ############
+class Preprocessor(BaseEstimator): # comme dans le tp 2
+    def __init__(self):
+        self.transformer = PCA(n_components=10)
+
+    def fit(self, X, y=None):
+        return self.transformer.fit(X, y)
+
+    def fit_transform(self, X, y=None):
+        return self.transformer.fit_transform(X)
+
+    def transform(self, X, y=None):
+        return self.transformer.transform(X)
+    #############################
 class model(BaseEstimator):
     def __init__(self, choice):
         '''
