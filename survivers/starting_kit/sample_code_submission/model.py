@@ -26,7 +26,7 @@ from sklearn.ensemble import VotingClassifier       # les regressions
 from sklearn.pipeline import Pipeline               #
 
 class model(BaseEstimator):
-    def __init__(self):
+    def __init__(self, choice):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation.
@@ -36,28 +36,29 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
 
-# Partie avec les régressions
-
         ''' Baseline decision tree : 0.736285037 '''
-        #self.baseline_clf = DecisionTreeRegressor(max_depth=4)
+        if choice == 0 :
+            self.baseline_clf = DecisionTreeRegressor(max_depth=4)
      
         ''' Naivebayes : score 0.2084484036 '''
-        #self.baseline_clf = GaussianNB()
+        if choice == 1 :
+            self.baseline_clf = GaussianNB()
         
         ''' linaire regression : score 0.683989487 '''
-        #self.baseline_clf = LinearRegression()
+        if choice == 2 :
+            self.baseline_clf = LinearRegression()
         
         ''' random forest : score 0.4795732662 '''
-        #self.baseline_clf = RandomForestClassifier()
+        if choice == 3 :
+            self.baseline_clf = RandomForestClassifier()
         
         ''' nearest neighbors : score 0.2249313468 '''
-        #self.baseline_clf = NearestCentroid()
-
-
-        
-    # Sélection de la meilleur régression
+        if choice == 4 :
+            self.baseline_clf = NearestCentroid()
+            
         ''' GradientBoostingRegressor : score 0.7800 '''
-        self.baseline_clf = GradientBoostingRegressor()  # notre meilleur régression 
+        if choice == 5 :
+            self.baseline_clf = GradientBoostingRegressor()  # notre meilleur régression 
 
 # Fin de partie régression
 
