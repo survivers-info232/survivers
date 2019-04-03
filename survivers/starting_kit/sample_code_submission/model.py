@@ -28,8 +28,8 @@ from sklearn.pipeline import Pipeline               #
 from sklearn.decomposition import PCA
     ############ nouvelle idée ############
 class Preprocessor(BaseEstimator): # comme dans le tp 2
-    def __init__(self):
-        self.transformer = PCA(n_components=10)
+    def __init__(self, n_components=2):
+        self.transformer = PCA(n_components=n_components)
 
     def fit(self, X, y=None):
         return self.transformer.fit(X, y)
@@ -39,9 +39,39 @@ class Preprocessor(BaseEstimator): # comme dans le tp 2
 
     def transform(self, X, y=None):
         return self.transformer.transform(X)
+    
+    if __name__=="__main__":
+    # We can use this to run this file as a script and test the Preprocessor
+        if len(argv)==1: # Use the default input and output directories if no arguments are provided
+            input_dir = "../public_data"
+            output_dir = "../results"
+        else:
+            input_dir = argv[1]
+            output_dir = argv[2];
+        
+        data_dir = '../public_data' 
+        data_name = 'Mortality'
+        D = DataManager(data_name, data_dir, replace_missing=True) # Load data
+        print("*** Original data ***")
+        print(D)
+        
+        Prepro = Preprocessor()
+
+        # Preprocess on the data and load it back into D
+        D.data['X_train'] = Prepro.fit_transform(D.data['X_train'], D.data['Y_train'])
+        D.data['X_valid'] = Prepro.transform(D.data['X_valid'])
+        D.data['X_test'] = Prepro.transform(D.data['X_test'])
+        D.feat_name = np.array(['PC1', 'PC2'])
+        D.feat_type = np.array(['Numeric', 'Numeric'])
+        
+        # Here show something that proves that the preprocessing worked fine
+        print("*** Transformed data ***")
+        print(D)
     #############################
+
 class model(BaseEstimator):
-    def __init__(self, choice):
+    baseline_clf = Pipeline([('Prepro', Preprocessor()),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
+    def __init__(self, choice = 5):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation.
@@ -53,27 +83,27 @@ class model(BaseEstimator):
 
         ''' Baseline decision tree : 0.736285037 '''
         if choice == 0 :
-            self.baseline_clf = DecisionTreeRegressor(max_depth=4)
+            self.baseline_clf = Pipeline([('Prepro', Preprocessor()),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
      
         ''' Naivebayes : score 0.2084484036 '''
         if choice == 1 :
-            self.baseline_clf = GaussianNB()
+            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), ('GaussianNB', GaussianNB())])
         
         ''' linaire regression : score 0.683989487 '''
         if choice == 2 :
-            self.baseline_clf = LinearRegression()
+            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), ('LinearRegression', LinearRegression())])
         
         ''' random forest : score 0.4795732662 '''
         if choice == 3 :
-            self.baseline_clf = RandomForestClassifier()
+            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), ('RandomForestClassifier', RandomForestClassifier())])
         
         ''' nearest neighbors : score 0.2249313468 '''
         if choice == 4 :
-            self.baseline_clf = NearestCentroid()
+            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), (' NearestCentroid', NearestCentroid())])
             
         ''' GradientBoostingRegressor : score 0.7800 '''
         if choice == 5 :
-            self.baseline_clf = GradientBoostingRegressor()  # notre meilleur régression 
+            self.baseline_clf = Pipeline([('Prepro', Preprocessor(10)),('GradientBoostingRegressor', GradientBoostingRegressor())])  # notre meilleur régression 
 
 # Fin de partie régression
 
@@ -91,6 +121,7 @@ class model(BaseEstimator):
         Use data_converter.convert_to_num() to convert to the category number format.
         For regression, labels are continuous values.
         '''
+        
         self.num_train_samples = X.shape[0]
         if X.ndim>1: self.num_feat = X.shape[1]
         print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
@@ -159,13 +190,16 @@ class model(BaseEstimator):
         return pred
 
     def save(self, path="./"):
-        pickle.dump(self, open(path + '_model.pickle', "wb"))
+        #pickle.dump(self, open(path + '_model.pickle', "wb"))
+        pass
 
     def load(self, path="./"):
+        """
         modelfile = path + '_model.pickle'
         if isfile(modelfile):
             with open(modelfile, 'rb') as f:
                 self = pickle.load(f)
             print("Model reloaded from: " + modelfile)
+        """
         return self
 
