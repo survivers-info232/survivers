@@ -71,7 +71,7 @@ class Preprocessor(BaseEstimator): # comme dans le tp 2
 
 class model(BaseEstimator):
     baseline_clf = Pipeline([('Prepro', Preprocessor()),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
-    def __init__(self, choice = 5):
+    def __init__(self, choice , n_components,, is_pca = False):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation.
@@ -80,30 +80,55 @@ class model(BaseEstimator):
         self.num_feat=1
         self.num_labels=1
         self.is_trained=False
+        
+        if is_pca :
+            ''' Baseline decision tree : 0.736285037 '''
+            if choice == 0 :
+                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
 
-        ''' Baseline decision tree : 0.736285037 '''
-        if choice == 0 :
-            self.baseline_clf = Pipeline([('Prepro', Preprocessor()),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
-     
-        ''' Naivebayes : score 0.2084484036 '''
-        if choice == 1 :
-            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), ('GaussianNB', GaussianNB())])
-        
-        ''' linaire regression : score 0.683989487 '''
-        if choice == 2 :
-            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), ('LinearRegression', LinearRegression())])
-        
-        ''' random forest : score 0.4795732662 '''
-        if choice == 3 :
-            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), ('RandomForestClassifier', RandomForestClassifier())])
-        
-        ''' nearest neighbors : score 0.2249313468 '''
-        if choice == 4 :
-            self.baseline_clf = Pipeline([('Prepro', Preprocessor()), (' NearestCentroid', NearestCentroid())])
-            
-        ''' GradientBoostingRegressor : score 0.7800 '''
-        if choice == 5 :
-            self.baseline_clf = Pipeline([('Prepro', Preprocessor(10)),('GradientBoostingRegressor', GradientBoostingRegressor())])  # notre meilleur régression 
+            ''' Naivebayes : score 0.2084484036 '''
+            if choice == 1 :
+                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('GaussianNB', GaussianNB())])
+
+            ''' linaire regression : score 0.683989487 '''
+            if choice == 2 :
+                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('LinearRegression', LinearRegression())])
+
+            ''' random forest : score 0.4795732662 '''
+            if choice == 3 :
+                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('RandomForestClassifier', RandomForestClassifier())])
+
+            ''' nearest neighbors : score 0.2249313468 '''
+            if choice == 4 :
+                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), (' NearestCentroid', NearestCentroid())])
+
+            ''' GradientBoostingRegressor : score 0.7800 '''
+            if choice == 5 :
+                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)),('GradientBoostingRegressor', GradientBoostingRegressor())])  # notre meilleur régression 
+        else :
+            ''' Baseline decision tree : 0.736285037 '''
+            if choice == 0 :
+                self.baseline_clf = DecisionTreeRegressor()
+
+            ''' Naivebayes : score 0.2084484036 '''
+            if choice == 1 :
+                self.baseline_clf = GaussianNB()
+
+            ''' linaire regression : score 0.683989487 '''
+            if choice == 2 :
+                self.baseline_clf = LinearRegression()
+
+            ''' random forest : score 0.4795732662 '''
+            if choice == 3 :
+                self.baseline_clf = RandomForestClassifier()
+
+            ''' nearest neighbors : score 0.2249313468 '''
+            if choice == 4 :
+                self.baseline_clf = NearestCentroid()
+
+            ''' GradientBoostingRegressor : score 0.7800 '''
+            if choice == 5 :
+                self.baseline_clf = GradientBoostingRegressor()  # notre meilleur régression 
 
 # Fin de partie régression
 
@@ -124,10 +149,10 @@ class model(BaseEstimator):
         
         self.num_train_samples = X.shape[0]
         if X.ndim>1: self.num_feat = X.shape[1]
-        print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
+        #print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
         num_train_samples = y.shape[0]
         if y.ndim>1: self.num_labels = y.shape[1]
-        print("FIT: dim(y)= [{:d}, {:d}]".format(num_train_samples, self.num_labels))
+        #print("FIT: dim(y)= [{:d}, {:d}]".format(num_train_samples, self.num_labels))
         if (self.num_train_samples != num_train_samples):
             print("ARRGH: number of samples in X and y do not match!")
 
@@ -180,13 +205,13 @@ class model(BaseEstimator):
         '''
         num_test_samples = X.shape[0]
         if X.ndim>1: num_feat = X.shape[1]
-        print("PREDICT: dim(X)= [{:d}, {:d}]".format(num_test_samples, num_feat))
+        #print("PREDICT: dim(X)= [{:d}, {:d}]".format(num_test_samples, num_feat))
         if (self.num_feat != num_feat):
             print("ARRGH: number of features in X does not match training data!")
-        print("PREDICT: dim(y)= [{:d}, {:d}]".format(num_test_samples, self.num_labels))
+        #print("PREDICT: dim(y)= [{:d}, {:d}]".format(num_test_samples, self.num_labels))
         # We ask the model to predict new data X :
         pred = self.baseline_clf.predict(X)
-        print('DEBUG : '+str(pred.shape))
+        #print('DEBUG : '+str(pred.shape))
         return pred
 
     def save(self, path="./"):
