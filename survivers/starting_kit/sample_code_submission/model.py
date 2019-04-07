@@ -40,38 +40,11 @@ class Preprocessor(BaseEstimator): # comme dans le tp 2
     def transform(self, X, y=None):
         return self.transformer.transform(X)
     
-    if __name__=="__main__":
-    # We can use this to run this file as a script and test the Preprocessor
-        if len(argv)==1: # Use the default input and output directories if no arguments are provided
-            input_dir = "../public_data"
-            output_dir = "../results"
-        else:
-            input_dir = argv[1]
-            output_dir = argv[2];
-        
-        data_dir = '../public_data' 
-        data_name = 'Mortality'
-        D = DataManager(data_name, data_dir, replace_missing=True) # Load data
-        print("*** Original data ***")
-        print(D)
-        
-        Prepro = Preprocessor()
-
-        # Preprocess on the data and load it back into D
-        D.data['X_train'] = Prepro.fit_transform(D.data['X_train'], D.data['Y_train'])
-        D.data['X_valid'] = Prepro.transform(D.data['X_valid'])
-        D.data['X_test'] = Prepro.transform(D.data['X_test'])
-        D.feat_name = np.array(['PC1', 'PC2'])
-        D.feat_type = np.array(['Numeric', 'Numeric'])
-        
-        # Here show something that proves that the preprocessing worked fine
-        print("*** Transformed data ***")
-        print(D)
     #############################
 
 class model(BaseEstimator):
     baseline_clf = Pipeline([('Prepro', Preprocessor()),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
-    def __init__(self, choice , n_components,, is_pca = False):
+    def __init__(self, choice =5 , n_components = 10, is_pca = False):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation.
@@ -132,7 +105,7 @@ class model(BaseEstimator):
 
 # Fin de partie régression
 
-    def fit(self, X, y):
+    def fit(self, X, y, verbose = False):
         '''
         This function should train the model parameters.
         Here we do nothing in this example...
@@ -149,10 +122,12 @@ class model(BaseEstimator):
         
         self.num_train_samples = X.shape[0]
         if X.ndim>1: self.num_feat = X.shape[1]
-        #print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
+        if verbose :
+            print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
         num_train_samples = y.shape[0]
         if y.ndim>1: self.num_labels = y.shape[1]
-        #print("FIT: dim(y)= [{:d}, {:d}]".format(num_train_samples, self.num_labels))
+        if verbose :
+            print("FIT: dim(y)= [{:d}, {:d}]".format(num_train_samples, self.num_labels))
         if (self.num_train_samples != num_train_samples):
             print("ARRGH: number of samples in X and y do not match!")
 
@@ -191,7 +166,7 @@ class model(BaseEstimator):
                 return (X_censored,Y_censored)
         
 
-    def predict(self, X):
+    def predict(self, X, verbose = False):
         '''
         This function should provide predictions of labels on (test) data.
         Here we just return zeros...
@@ -205,13 +180,16 @@ class model(BaseEstimator):
         '''
         num_test_samples = X.shape[0]
         if X.ndim>1: num_feat = X.shape[1]
-        #print("PREDICT: dim(X)= [{:d}, {:d}]".format(num_test_samples, num_feat))
+        if verbose :
+            print("PREDICT: dim(X)= [{:d}, {:d}]".format(num_test_samples, num_feat))
         if (self.num_feat != num_feat):
             print("ARRGH: number of features in X does not match training data!")
-        #print("PREDICT: dim(y)= [{:d}, {:d}]".format(num_test_samples, self.num_labels))
+        if verbose :
+            print("PREDICT: dim(y)= [{:d}, {:d}]".format(num_test_samples, self.num_labels))
         # We ask the model to predict new data X :
         pred = self.baseline_clf.predict(X)
-        #print('DEBUG : '+str(pred.shape))
+        if verbose :
+            print('DEBUG : '+str(pred.shape))
         return pred
 
     def save(self, path="./"):
