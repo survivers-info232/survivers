@@ -43,6 +43,7 @@ class Preprocessor(BaseEstimator): # comme dans le tp 2
     #############################
 
 class model(BaseEstimator):
+    #initialisation de baseline_clf pour que la cross- validation fontionne
     baseline_clf = Pipeline([('Prepro', Preprocessor()),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
     def __init__(self, choice =5 , n_components = 10, is_pca = False):
         '''
@@ -54,31 +55,32 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
         
-        if is_pca :
-            ''' Baseline decision tree : 0.736285037 '''
+        if is_pca : #si on utilise PCA
+            ''' Baseline decision tree '''
             if choice == 0 :
                 self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
 
-            ''' Naivebayes : score 0.2084484036 '''
+            ''' Naivebayes '''
             if choice == 1 :
                 self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('GaussianNB', GaussianNB())])
 
-            ''' linaire regression : score 0.683989487 '''
+            ''' linaire regression '''
             if choice == 2 :
                 self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('LinearRegression', LinearRegression())])
 
-            ''' random forest : score 0.4795732662 '''
+            ''' random forest '''
             if choice == 3 :
                 self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('RandomForestClassifier', RandomForestClassifier())])
 
-            ''' nearest neighbors : score 0.2249313468 '''
+            ''' nearest neighbors '''
             if choice == 4 :
                 self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), (' NearestCentroid', NearestCentroid())])
 
-            ''' GradientBoostingRegressor : score 0.7800 '''
+            ''' GradientBoostingRegressor '''
             if choice == 5 :
                 self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)),('GradientBoostingRegressor', GradientBoostingRegressor())])  # notre meilleur régression 
-        else :
+                
+        else : #si on utilise pas PCA
             ''' Baseline decision tree : 0.736285037 '''
             if choice == 0 :
                 self.baseline_clf = DecisionTreeRegressor()
@@ -144,6 +146,7 @@ class model(BaseEstimator):
         
     def processor(self,X,Y, what):                 # Le preprocessing ( séparation des données censurés et non censurés )
     ###    NEW CONTRIBUTION OH THE GROUP ###       # Les tests sont sur le jupyter notebook
+    '''This function doesn't work we use PCA directly in the _init_'''
         '''This function should preprocess the data
         Args :
             X : training data matrix
