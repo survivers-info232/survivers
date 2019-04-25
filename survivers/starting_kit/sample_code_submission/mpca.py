@@ -1,3 +1,4 @@
+## j'ai remis mpca car sinon les scores de cross-validation sont egales peu import la regression ##
 '''
 Sample predictive model.
 You must supply at least 4 methods:
