@@ -25,27 +25,9 @@ from sklearn.ensemble import BaggingClassifier      # Pour faire voter
 from sklearn.ensemble import VotingClassifier       # les regressions
 from sklearn.pipeline import Pipeline               #
 
-from sklearn.decomposition import PCA
-    ############ nouvelle idée ############
-class Preprocessor(BaseEstimator): # comme dans le tp 2
-    def __init__(self, n_components=2):
-        self.transformer = PCA(n_components=n_components)
-
-    def fit(self, X, y=None):
-        return self.transformer.fit(X, y)
-
-    def fit_transform(self, X, y=None):
-        return self.transformer.fit_transform(X)
-
-    def transform(self, X, y=None):
-        return self.transformer.transform(X)
-    
-    #############################
-
 class model(BaseEstimator):
-    #initialisation de baseline_clf pour que la cross- validation fontionne
-    baseline_clf = Pipeline([('Prepro', Preprocessor()),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
-    def __init__(self, choice =5 , n_components = 10, is_pca = False):
+    baseline_clf = GradientBoostingRegressor()
+    def __init__(self, choice):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation.
@@ -54,60 +36,34 @@ class model(BaseEstimator):
         self.num_feat=1
         self.num_labels=1
         self.is_trained=False
-        
-        if is_pca : #si on utilise PCA
-            ''' Baseline decision tree '''
-            if choice == 0 :
-                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)),('DecisionTreeRegressor', DecisionTreeRegressor(max_depth=4))])
 
-            ''' Naivebayes '''
-            if choice == 1 :
-                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('GaussianNB', GaussianNB())])
+        ''' Baseline decision tree : 0.736285037 '''
+        if choice == 0 :
+            self.baseline_clf = DecisionTreeRegressor(max_depth=4)
 
-            ''' linaire regression '''
-            if choice == 2 :
-                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('LinearRegression', LinearRegression())])
+        ''' Naivebayes : score 0.2084484036 '''
+        if choice == 1 :
+            self.baseline_clf = GaussianNB()
 
-            ''' random forest '''
-            if choice == 3 :
-                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), ('RandomForestClassifier', RandomForestClassifier())])
+        ''' linaire regression : score 0.683989487 '''
+        if choice == 2 :
+            self.baseline_clf = LinearRegression()
 
-            ''' nearest neighbors '''
-            if choice == 4 :
-                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)), (' NearestCentroid', NearestCentroid())])
+        ''' random forest : score 0.4795732662 '''
+        if choice == 3 :
+            self.baseline_clf = RandomForestClassifier()
 
-            ''' GradientBoostingRegressor '''
-            if choice == 5 :
-                self.baseline_clf = Pipeline([('Prepro', Preprocessor(n_components)),('GradientBoostingRegressor', GradientBoostingRegressor())])  # notre meilleur régression 
-                
-        else : #si on utilise pas PCA
-            ''' Baseline decision tree : 0.736285037 '''
-            if choice == 0 :
-                self.baseline_clf = DecisionTreeRegressor()
+        ''' nearest neighbors : score 0.2249313468 '''
+        if choice == 4 :
+            self.baseline_clf = NearestCentroid()
 
-            ''' Naivebayes : score 0.2084484036 '''
-            if choice == 1 :
-                self.baseline_clf = GaussianNB()
+        ''' GradientBoostingRegressor : score 0.7800 '''
+        if choice == 5 :
+            self.baseline_clf = GradientBoostingRegressor()  # notre meilleur régression 
 
-            ''' linaire regression : score 0.683989487 '''
-            if choice == 2 :
-                self.baseline_clf = LinearRegression()
+ # Fin de partie régression
 
-            ''' random forest : score 0.4795732662 '''
-            if choice == 3 :
-                self.baseline_clf = RandomForestClassifier()
-
-            ''' nearest neighbors : score 0.2249313468 '''
-            if choice == 4 :
-                self.baseline_clf = NearestCentroid()
-
-            ''' GradientBoostingRegressor : score 0.7800 '''
-            if choice == 5 :
-                self.baseline_clf = GradientBoostingRegressor()  # notre meilleur régression 
-
-# Fin de partie régression
-
-    def fit(self, X, y, verbose = False):
+    def fit(self, X, y):
         '''
         This function should train the model parameters.
         Here we do nothing in this example...
@@ -121,15 +77,12 @@ class model(BaseEstimator):
         Use data_converter.convert_to_num() to convert to the category number format.
         For regression, labels are continuous values.
         '''
-        
         self.num_train_samples = X.shape[0]
         if X.ndim>1: self.num_feat = X.shape[1]
-        if verbose :
-            print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
+        #print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
         num_train_samples = y.shape[0]
         if y.ndim>1: self.num_labels = y.shape[1]
-        if verbose :
-            print("FIT: dim(y)= [{:d}, {:d}]".format(num_train_samples, self.num_labels))
+        #print("FIT: dim(y)= [{:d}, {:d}]".format(num_train_samples, self.num_labels))
         if (self.num_train_samples != num_train_samples):
             print("ARRGH: number of samples in X and y do not match!")
 
@@ -143,10 +96,9 @@ class model(BaseEstimator):
         # Once we have our regression target, we simply fit our model :
         self.baseline_clf.fit(X, y)
         self.is_trained=True
-        
+
     def processor(self,X,Y, what):                 # Le preprocessing ( séparation des données censurés et non censurés )
     ###    NEW CONTRIBUTION OH THE GROUP ###       # Les tests sont sur le jupyter notebook
-        '''This function doesn't work we use PCA directly in the _init_'''
         '''This function should preprocess the data
         Args :
             X : training data matrix
@@ -167,9 +119,9 @@ class model(BaseEstimator):
             else :
                 Y_censored = Y[np.where(X[:,X.shape[1]-1]==1)]
                 return (X_censored,Y_censored)
-        
 
-    def predict(self, X, verbose = False):
+
+    def predict(self, X):
         '''
         This function should provide predictions of labels on (test) data.
         Here we just return zeros...
@@ -183,29 +135,22 @@ class model(BaseEstimator):
         '''
         num_test_samples = X.shape[0]
         if X.ndim>1: num_feat = X.shape[1]
-        if verbose :
-            print("PREDICT: dim(X)= [{:d}, {:d}]".format(num_test_samples, num_feat))
+        #print("PREDICT: dim(X)= [{:d}, {:d}]".format(num_test_samples, num_feat))
         if (self.num_feat != num_feat):
             print("ARRGH: number of features in X does not match training data!")
-        if verbose :
-            print("PREDICT: dim(y)= [{:d}, {:d}]".format(num_test_samples, self.num_labels))
+        print("PREDICT: dim(y)= [{:d}, {:d}]".format(num_test_samples, self.num_labels))
         # We ask the model to predict new data X :
         pred = self.baseline_clf.predict(X)
-        if verbose :
-            print('DEBUG : '+str(pred.shape))
+        #print('DEBUG : '+str(pred.shape))
         return pred
 
     def save(self, path="./"):
-        #pickle.dump(self, open(path + '_model.pickle', "wb"))
-        pass
+        pickle.dump(self, open(path + '_model.pickle', "wb"))
 
     def load(self, path="./"):
-        """
         modelfile = path + '_model.pickle'
         if isfile(modelfile):
             with open(modelfile, 'rb') as f:
                 self = pickle.load(f)
             print("Model reloaded from: " + modelfile)
-        """
         return self
-
